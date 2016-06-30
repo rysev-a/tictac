@@ -1,5 +1,4 @@
 App = require '../../../../app'
-console.log(App);
 
 {h1, a, p, div} = React.DOM
 
