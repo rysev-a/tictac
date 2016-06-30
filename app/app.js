@@ -1,13 +1,13 @@
+var HomeRouter = require('./apps/home/router');
+require('./apps/users/router');
+
 var App = {
   Models: {},
   Collections: {},
   Routers: {},
   start() {
-    _.each(_.values(this.Routers), function(Router) {
-      new Router();
-    })
-
-    App.router = new DefaultRouter();
+    App.mainRegion = 'app';
+    App.router = new HomeRouter();
     Backbone.history.start();
   },
   startSubApplication(SubApplication) {
@@ -28,3 +28,8 @@ var App = {
   }
 
 }
+
+
+_.extend(App, Backbone.Events);
+
+module.exports = App;
