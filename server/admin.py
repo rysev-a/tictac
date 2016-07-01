@@ -5,5 +5,11 @@ from . import app
 from .users.models import User
 from .database import db_session
 admin = Admin(app)
-admin.add_view(ModelView(User, db_session))
+
+
+class UserAdmin(ModelView):
+    column_list = ['login', 'email', 'active']
+    form_columns = ['login', 'email', 'about', 'active']
+
+admin.add_view(UserAdmin(User, db_session))
 

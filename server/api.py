@@ -4,6 +4,6 @@ from .users.resources import CurrentUser, UserList
 
 
 api = Api(app)
-api.add_resource(CurrentUser, '/users/current')
-api.add_resource(UserList, '/users/')
+api.add_resource(CurrentUser, '/api/users/current')
+api.add_resource(UserList, '/api/users')
 

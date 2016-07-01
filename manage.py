@@ -2,6 +2,7 @@
 import sys, os, subprocess
 import os.path as op
 import json
+import sqlalchemy
 
 from flask.ext.script import Manager
 from server import app
@@ -11,10 +12,15 @@ from server.users.models import User
 manager = Manager(app)
 
 @manager.command
-def init_app():
-    init_db()
-    print('successful create db')
+def clear_db():
+    sqlalchemy.sql.expression.delete('users')
+    db_session.commit()
 
+@manager.command
+def initapp():
+    #clear_db()
+    init_db()
+    runserver()
 
 @manager.command
 def runserver():

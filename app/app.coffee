@@ -1,5 +1,3 @@
-
-
 App =
   Models: {}
   Collections: {}

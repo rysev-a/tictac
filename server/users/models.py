@@ -1,16 +1,27 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, Boolean, String, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Table
 from sqlalchemy.ext.hybrid import hybrid_property
 
+
+from wtforms import StringField
+from wtforms.validators import DataRequired
+from wtforms_alchemy.validators import Unique
+from wtforms_alchemy import ModelForm
+
+from ..database import db_session
+from ..bcrypt import flask_bcrypt
 from ..database import Base
 
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique=True)
-    email = Column(String(120), unique=True)
-    _password = Column('passowrd', String(60))
+    login = Column(String(50), unique=True)
+    about = Column(String(50))
+    active = Column(Boolean)
+    email = Column(String(120), unique=True, nullable=False)
+
+    _password = Column('passowrd', String(200))
 
     @hybrid_property
     def password(self):
@@ -39,3 +50,8 @@ class User(Base):
 
     def get_id(self):
         return str(self.id)
+
+class UserForm(ModelForm):
+    login = StringField('login', validators=[DataRequired(), Unique(User.login)])
+    email = StringField('email', validators=[DataRequired(), Unique(User.email)])
+    password = StringField('pasword', validators=[DataRequired()])
