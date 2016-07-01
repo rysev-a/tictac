@@ -1,0 +1,31 @@
+@import '../mdl-colors'
+
+messageHeight = 30px
+
+.message-container
+  margin-top -(messageHeight)
+  overflow hidden
+  #message
+    overflow hidden
+    height (messageHeight)
+    opacity 0.8
+  .message
+    transition bottom ease-in-out 0.3s
+    position absolute
+    background #33C3F0
+    color #fff
+    bottom -(messageHeight)
+    right 0
+    width 100px
+    border-radius 5px 5px 0 0
+    height (messageHeight)
+    line-height (messageHeight)
+    text-align center
+
+    &.active
+      bottom 0
+    
+    &.error
+      background md-red-700
+    &.success
+      background md-light-green-500
