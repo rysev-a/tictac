@@ -23,10 +23,22 @@ class Game(Base):
     id = Column(Integer, primary_key=True)
     creator_id = Column(Integer, ForeignKey('users.id'))
     creator = relationship('User', foreign_keys=[creator_id])    
-    enemy_id = Column(Integer, ForeignKey('users.id'))
+    enemy_id = Column(Integer, ForeignKey('users.id'), nullable=True)
     enemy = relationship('User', foreign_keys=[enemy_id])
     steps = relationship("Step", 
         primaryjoin="Game.id==Step.game_id")
+    status = Column(Integer, default=0)
+
+    def get_status(self):
+        status_map = {
+            0: 'created',
+            1: 'in_progress',
+            2: 'creator_win',
+            3: 'enemy_win',
+            4: 'reject'
+        }
+
+        return status_map[self.status]
 
     def __repr__(self):
         return '%s vs %s' % (self.creator.login, self.enemy.login)

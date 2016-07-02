@@ -20,18 +20,21 @@ class LoginPage
     ReactDOM.render(element, document.getElementById(@region))
 
   startLogin: (user)->
+    App.trigger('loading:start')
     user.login().then(
       (response)->
         message = new Message
           content: 'login complete'
         message.showMessageView()
         App.router.navigate('', true)
-        App.trigger('profile:login', user)
+        App.trigger('profile:login', new User(response))
+        App.trigger('loading:stop')
       (response)=>
         message = new Message
           content: response.responseJSON.message
           type: 'error'
         message.showMessageView()
+        App.trigger('loading:stop')
     )
 
 

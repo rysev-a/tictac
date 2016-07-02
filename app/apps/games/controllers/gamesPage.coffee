@@ -1,12 +1,42 @@
+App = require('../../../app')
 GamesView = require('../views/gamesView')
+Game = require('../models/game')
+GameCollection = require '../collections/gameCollection'
 
 class GamesPage
   constructor: (options)->
-    @region = options.region
-    _.extend(this, Backbone.Events)
+    App.on('game:createGame', @createGame.bind(this))
+    App.on('game:startGame', @startGame.bind(this))
 
+    @region = options.region
+    @initGames()
+
+  initGames: ()->
+    @gameCollection = new GameCollection
+    @gameCollection.fetch()
+    
   showGamesView: ()->
-    element = React.createElement(GamesView)
-    ReactDOM.render(element, document.getElementById(@region))
+    App.trigger('loading:start')
+    @initGames().then(
+      ()=>
+        element = React.createElement(GamesView, gamesData: @gameCollection)
+        ReactDOM.render(element, document.getElementById(@region))
+        App.trigger('loading:stop')
+      ()=>
+        App.trigger('loading:stop')
+    )
+
+  createGame: ()->
+    game = new Game
+     creator_id: App.profile.model.get('id')
+    game.save().then(
+      (response)=>
+        console.log response
+      (response)=>
+        console.log response
+    )
+
+  startGame: (id)->
+    App.router.navigate("games/start/#{id}", true)
 
 module.exports = GamesPage

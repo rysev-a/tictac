@@ -3,17 +3,16 @@ class GamesRouter extends Backbone.Router
     super(options);
     @routes =
       'games': 'showGames',
-      'games/create': 'createGame'
+      'games/start/:id': 'startGame'
     this._bindRoutes();
 
   showGames: ()->
     app = @startApp()
     app.showGames()
 
-  createGame: ()->
+  startGame: (id)->
     app = @startApp()
-    app.createGame()
-
+    app.startGame(id)
 
   startApp: ()->
     App = require('../../app')

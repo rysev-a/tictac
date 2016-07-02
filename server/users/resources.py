@@ -13,7 +13,8 @@ class UserCurrent(Resource):
         return {
             'id':    current_user.id,
             'login': current_user.login,
-            'email': current_user.email
+            'email': current_user.email,
+            'about': current_user.about
         }, 200
 
 class UserLogin(Resource):
@@ -31,12 +32,33 @@ class UserLogin(Resource):
             return {'message': 'Invalid password'}, 400        
 
         login_user(user, remember=True)
-        return {'message': 'login success'}, 200
+
+        user_fields = {
+            'id': fields.Integer,
+            'login' : fields.String,
+            'email': fields.String,
+            'about': fields.String
+        }
+        return marshal(list([user]), user_fields)[0], 200
 
 class UserLogout(Resource):
     def post(self):
         logout_user()
         return {'message': 'logout success'}, 200
+
+class UserItem(Resource):
+    def get(self, user_id):
+        user = User.query.get(user_id)
+        if not user:
+            return {'message': 'not found'}, 400
+        print(user)
+        user_fields = {
+            'id': fields.Integer,
+            'login' : fields.String,
+            'email': fields.String,
+            'about': fields.String
+        }
+        return marshal(list([user]), user_fields)[0], 200
 
 class UserList(Resource):
     def post(self):

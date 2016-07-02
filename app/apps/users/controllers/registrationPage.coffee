@@ -20,6 +20,7 @@ class RegistrationPage
     ReactDOM.render(element, document.getElementById(@region))
 
   startRegistration: (user)->
+    App.trigger('loading:start')
     user.save().then(
       (response)->
         message = new Message
@@ -27,12 +28,14 @@ class RegistrationPage
         message.showMessageView()
         App.router.navigate('', true)
         App.trigger('profile:login', user)
+        App.trigger('loading:stop')
       (response)=>
         App.trigger('registration:setErrors', response.responseJSON)
         message = new Message
           content: 'oooops!'
           type: 'error'
         message.showMessageView()
+        App.trigger('loading:stop')
     )
 
 

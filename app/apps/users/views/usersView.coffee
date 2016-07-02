@@ -3,19 +3,18 @@ App = require '../../../../app'
 {h1, a, p, div} = React.DOM
 
 UsersView = React.createClass
-  goToHome:->
-    App.router.navigate '', true
+  action:->
+    #App.trigger('loading:start')
+    #App.router.navigate '', true
+    console.log App.profile.model
 
   render:->
     div
       className: 'elements'
       a
         className: 'button button-primary'
-        onClick: @goToHome
-        'home'
-      div
-        className: '.home'
-        'users'
+        onClick: @action
+        'hack'
 
 
 module.exports = UsersView
