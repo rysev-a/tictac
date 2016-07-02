@@ -1,4 +1,4 @@
-HomeView = require('./views/homeView')
+HomeView = require('../views/homeView')
 
 class HomePage
   constructor: (options)->

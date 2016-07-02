@@ -14,14 +14,14 @@ from ..bcrypt import flask_bcrypt
 from ..database import Base
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     login = Column(String(50), unique=True)
     about = Column(String(50))
     active = Column(Boolean)
+    online = Column(Boolean)
     email = Column(String(120), unique=True, nullable=False)
-
-    _password = Column('passowrd', String(200))
+    _password = Column('password', String(200))
 
     @hybrid_property
     def password(self):
@@ -29,15 +29,10 @@ class User(Base):
 
     @password.setter
     def password(self, password):
-        self._password = flask_bcrypt.generate_password_hash(password)
-
-    # def __init__(self, name=None, email=None):
-    #     self.name = name
-    #     self.email = email
+        self._password = flask_bcrypt.generate_password_hash(password).decode("utf-8")
 
     def __repr__(self):
-        return '%s: %s' % (self.name, self.email)
-
+        return '%s: %s' % (self.login, self.email)
 
     def is_authenticated(self):
         return True

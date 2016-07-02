@@ -1,4 +1,4 @@
-HomePage = require('./homePage')
+HomePage = require('./controllers/homePage')
 
 class HomeApp
   constructor: (options)->

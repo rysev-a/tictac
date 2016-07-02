@@ -13,4 +13,5 @@ Base.query = db_session.query_property()
 
 def init_db():
     from .users import models as user_models
+    from .games import models as user_models
     Base.metadata.create_all(bind=engine)

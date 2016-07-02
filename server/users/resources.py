@@ -1,23 +1,42 @@
 from flask.ext.restful import Resource, reqparse, fields, marshal
-from flask.ext.login import current_user
+from flask.ext.login import current_user, login_user, logout_user
 from flask import request, jsonify, json
 
 from .models import User, UserForm
+from ..bcrypt import flask_bcrypt
 from ..database import init_db, db_session
 
-class CurrentUser(Resource):
+class UserCurrent(Resource):
     def get(self):
-        print(current_user)
         if not current_user.is_authenticated:
             return {'error': 'authorization required'}, 401
         return {
-            'status': 'success', 
-            'message': {
-                'id': current_user.id,
-                'name': current_user.name,
-                'email': current_user.email
-            }
-        }
+            'id':    current_user.id,
+            'login': current_user.login,
+            'email': current_user.email
+        }, 200
+
+class UserLogin(Resource):
+    def post(self):
+        email = request.get_json()['email']
+        password = request.get_json()['password']
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            return {'message': 'Invalid email'}, 400
+
+
+        if(not flask_bcrypt.check_password_hash(user.password, password)):
+            return {'message': 'Invalid password'}, 400        
+
+        login_user(user, remember=True)
+        return {'message': 'login success'}, 200
+
+class UserLogout(Resource):
+    def post(self):
+        logout_user()
+        return {'message': 'logout success'}, 200
 
 class UserList(Resource):
     def post(self):
@@ -26,22 +45,21 @@ class UserList(Resource):
 
         if not form.validate():
             response = jsonify(form.errors)
-            response.status_code = 409
+            response.status_code = 400
             return response
 
-        print(data)
-        # userForm = UserForm(**data)
-        # validate = userForm.validate()
-        #db_session.add(user)
-        #db_session.commit()
 
-        return {'message': 'success'}, 200
+        user = User(**data)
+        db_session.add(user)
+        db_session.commit()
+        login_user(user, remember=True)
 
         user_fields = {
             'login' : fields.String,
-            'email': fields.String
+            'email': fields.String,
+            'about': fields.String
         }
-        return marshal(list([user]), user_fields)[0]
+        return marshal(list([user]), user_fields)[0], 201
 
 
     def get(self):
@@ -54,3 +72,4 @@ class UserList(Resource):
         }
         users = User.query.all()
         return marshal(list(users), user_fields), 200
+

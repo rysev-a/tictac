@@ -6,5 +6,6 @@ class Link extends Backbone.Model
 
   defaults:
     active: false
+    visible: true
 
 module.exports = Link

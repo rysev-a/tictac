@@ -1,12 +1,12 @@
-UsersView = require('./views/usersView')
+GamesView = require('../views/gamesView')
 
-class UsersPage
+class GamesPage
   constructor: (options)->
     @region = options.region
     _.extend(this, Backbone.Events)
 
-  showUsersView: ()->
-    element = React.createElement(UsersView)
+  showGamesView: ()->
+    element = React.createElement(GamesView)
     ReactDOM.render(element, document.getElementById(@region))
 
-module.exports = UsersPage
+module.exports = GamesPage

@@ -10,7 +10,7 @@ InputView = React.createClass
     return {errorText: ''}
 
   getClassName:->
-    if @errorText then 'u-full-width error' else 'u-full-width'
+    if @.state.errorText then 'u-full-width error' else 'u-full-width'
 
   render:->
     {model, field, title, type, error} = @props
@@ -32,7 +32,7 @@ InputView = React.createClass
 
 RegistrationView = React.createClass
   render:->
-    user = @props.user
+    {user} = @props
     form
       className: 'registration-form'
       div
@@ -65,10 +65,9 @@ RegistrationView = React.createClass
             field: 'about'
             title: 'about you'
             error: 'about'
-
       a
         className: 'button button-primary submit-button'
-        onClick: ()=> App.trigger('start:registration', user)
+        onClick: ()=> App.trigger('registration:start', user)
         'done!'
 
 module.exports = RegistrationView

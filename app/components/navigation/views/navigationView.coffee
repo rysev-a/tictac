@@ -10,6 +10,9 @@ LinkView = React.createClass
     li
       className: 'navbar-item'
       onClick: =>
+        if @props.link.get('callback')
+          @props.link.get('callback')()
+          return false
         @props.link.setActive()
         App.router.navigate @props.link.get('url'), true
       a

@@ -1,23 +1,19 @@
 App = require('../../../app')
-UsersPage = require('./controllers/usersPage')
-RegistrationPage = require('./controllers/registrationPage')
-LoginPage = require('./controllers/loginPage')
+GamesPage = require('./controllers/gamesPage')
+# RegistrationPage = require('./registrationPage')
+# LoginPage = require('./loginPage')
 
-class UsersApp
+class GamesApp
   constructor: (options)->
     @region = options.region
 
-  showUsers: ()->
-    usersPage = @startController(UsersPage)
-    usersPage.showUsersView()
+  showGames: ()->
+    usersPage = @startController(GamesPage)
+    usersPage.showGamesView()
 
-  showRegistration: ()->
+  createGame: ()->
     registrationPage = @startController(RegistrationPage)
     registrationPage.showRegistrationView()
-
-  showLogin: ()->
-    loginPage = @startController(LoginPage)
-    loginPage.showLoginView()
 
   startController: (Controller)->
     if @currentController && @currentController instanceof Controller
@@ -32,11 +28,11 @@ class UsersApp
     return @currentController
 
   destroy: ()->
-    App.off('registration:start')
-    App.off('registration:setErrors')
-    App.off('login:start')
+    # App.off('registration:start')
+    # App.off('registration:setErrors')
+    # App.off('login:start')
     
-module.exports = UsersApp
+module.exports = GamesApp
 
 
 
