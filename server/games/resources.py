@@ -3,7 +3,8 @@ from flask.ext.restful import (Resource, reqparse, fields,
 from flask.ext.login import current_user, login_user, logout_user
 from flask import request, jsonify, json
 
-from .models import Game
+from ..socket import socketio
+from .models import Game, Step
 from ..bcrypt import flask_bcrypt
 from ..database import init_db, db_session
 
@@ -57,6 +58,8 @@ class GameList(Resource):
     def put(self):
         game_id = request.get_json()['id']
         game = Game.query.filter_by(id=game_id)
+        del request.json['creator']
+        del request.json['enemy']
         game.update(request.json)
         db_session.commit()
         return {'message': 'ok'}, 200
@@ -68,3 +71,23 @@ class GameItem(Resource):
             return {'message': 'not found'}, 400
 
         return marshal(list([game]), game_fields)[0], 200
+
+
+class StepList(Resource):
+    def post(self):
+        step_fields = {
+            'id': fields.Integer,
+            'master_id': fields.Integer,
+            'x': fields.Integer,
+            'y': fields.Integer
+        }
+
+        del request.json['side']
+        step = Step(**request.json)
+        db_session.add(step)
+        db_session.commit()
+
+        response = marshal(list([step]), step_fields)[0]
+        socketio.emit('game:saveStep', response)
+
+        return response

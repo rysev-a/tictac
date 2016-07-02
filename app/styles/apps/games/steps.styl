@@ -1,0 +1,22 @@
+@import '../../mdl-colors'
+stepSize = 10px
+
+.steps
+  position absolute
+  top 0
+  
+  .step
+    position absolute
+    width 10px
+    height 10px
+    &:before
+      left 50%
+      top 50%
+      margin-top -(stepSize/2)
+      margin-left -(stepSize/2)
+      content: ''
+      position absolute
+      width stepSize
+      height stepSize
+      border-radius (stepSize/2)
+      background md-purple-500

@@ -4,7 +4,7 @@ App =
   Routers: {}
   start: ()->
     _.extend(App, Backbone.Events)
-
+    App.socket = io.connect('http://' + document.domain + ':' + location.port)
     App.initCore()
     App.initComponents()
     App.initRouters()

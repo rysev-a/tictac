@@ -11,12 +11,15 @@ from ..database import Base
 class Step(Base):
     __tablename__ = 'steps'
     id = Column(Integer, primary_key=True)
-    creator_id = Column(Integer, ForeignKey('users.id'))
-    creator = relationship('User', foreign_keys=[creator_id])    
-    enemy_id = Column(Integer, ForeignKey('users.id'))
-    enemy = relationship('User', foreign_keys=[enemy_id])
+    master_id = Column(Integer, ForeignKey('users.id'))
+    master = relationship('User', foreign_keys=[master_id])
+    x = Column(Integer)
+    y = Column(Integer)
     game_id = Column(Integer, ForeignKey('games.id'))
-    game = relationship('Game', foreign_keys=[game_id])    
+    game = relationship('Game', foreign_keys=[game_id])
+
+    def __repr__(self):
+        return self.id
 
 class Game(Base):
     __tablename__ = 'games'
@@ -41,4 +44,7 @@ class Game(Base):
         return status_map[self.status]
 
     def __repr__(self):
-        return '%s vs %s' % (self.creator.login, self.enemy.login)
+        if self.enemy:
+            return '%s vs %s' % (self.creator.login, self.enemy.login)
+        else:
+            return '%s vs waitiong' % (self.creator.login)

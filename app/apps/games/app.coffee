@@ -21,7 +21,7 @@ class GamesApp
       @currentController
 
     if @currentController && @currentController.destroy
-      @currentController.destroy
+      @currentController.destroy()
 
     @currentController = new Controller
       region: @region
@@ -30,8 +30,12 @@ class GamesApp
     return @currentController
 
   destroy: ()->
+    if @currentController.destroy
+      @currentController.destroy()
     App.off('game:createGame')
     App.off('game:startGame')
+    App.off('game:createStep')
+    App.off('game:showStep')
     
 module.exports = GamesApp
 

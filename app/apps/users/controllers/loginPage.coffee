@@ -33,7 +33,6 @@ class LoginPage
         message = new Message
           content: response.responseJSON.message
           type: 'error'
-        message.showMessageView()
         App.trigger('loading:stop')
     )
 

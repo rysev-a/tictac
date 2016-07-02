@@ -24,7 +24,7 @@ Profile =
         message = new Message
           content: response.message
           type: 'success'
-        message.showMessageView()
+        #message.showMessageView()
         Profile.model.set('online', false)
         App.router.navigate('', true)
       (response)=>

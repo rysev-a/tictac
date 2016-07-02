@@ -34,7 +34,6 @@ class RegistrationPage
         message = new Message
           content: 'oooops!'
           type: 'error'
-        message.showMessageView()
         App.trigger('loading:stop')
     )
 
