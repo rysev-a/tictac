@@ -35,10 +35,12 @@ class Game(Base):
     def get_status(self):
         status_map = {
             0: 'created',
-            1: 'in_progress',
-            2: 'creator_win',
-            3: 'enemy_win',
-            4: 'reject'
+            1: 'creator_ready',
+            2: 'enemy_ready',
+            3: 'in_progress',
+            4: 'creator_win',
+            5: 'enemy_win',
+            6: 'reject'
         }
 
         return status_map[self.status]

@@ -12,10 +12,12 @@ class GameListStatus(fields.Raw):
     def format(self, value):
         status_map = {
             0: 'created',
-            1: 'in_progress',
-            2: 'creator_win',
-            3: 'enemy_win',
-            4: 'reject'
+            1: 'creator_ready',
+            2: 'enemy_ready',
+            3: 'in_progress',
+            4: 'creator_win',
+            5: 'enemy_win',
+            6: 'reject'
         }
         return status_map.get(value)
 
@@ -51,8 +53,9 @@ class GameList(Resource):
 
 
     def get(self):
-        games = Game.query.filter_by(status=0)
-        games = games.order_by(Game.id.desc())[:5]
+        # games = Game.query.filter_by(status=0)
+        # games = games.order_by(Game.id.desc())[:5]
+        games = Game.query.all()
         return marshal(list(games), game_fields), 200
 
     def put(self):
@@ -60,6 +63,8 @@ class GameList(Resource):
         game = Game.query.filter_by(id=game_id)
         del request.json['creator']
         del request.json['enemy']
+        del request.json['steps']
+        print(request.json)
         game.update(request.json)
         db_session.commit()
         return {'message': 'ok'}, 200
@@ -69,6 +74,23 @@ class GameItem(Resource):
         game = Game.query.get(game_id)
         if not game:
             return {'message': 'not found'}, 400
+
+        step_fields = {
+            'id': fields.Integer,
+            'master_id': fields.Integer,
+            'x': fields.Integer,
+            'y': fields.Integer
+        }
+
+        game_fields = {
+            'id': fields.Integer,
+            'creator' : fields.Nested(user_fields),
+            'enemy' : fields.Nested(user_fields),
+            'creator_id': fields.Integer,
+            'enemy_id': fields.Integer,
+            'status': GameListStatus,
+            'steps': fields.List(fields.Nested(step_fields))
+        }
 
         return marshal(list([game]), game_fields)[0], 200
 

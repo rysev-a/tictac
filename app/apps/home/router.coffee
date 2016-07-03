@@ -3,8 +3,11 @@ class HomeRouter extends Backbone.Router
     super(options)
     @routes =
       '': 'showIndex'
+    @_bindRoutes()
+    App = require('../../app')
+    @.on('route', (route)-> 
+      App.trigger('router:change', route))
 
-    this._bindRoutes()
   showIndex: ()->
     app = @startApp()
     app.showIndex()

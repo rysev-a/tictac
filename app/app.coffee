@@ -8,8 +8,8 @@ App =
     
     #init core, then init components and routers
     App.initCore().then ()=>
-      App.initComponents()
       App.initRouters()
+      App.initComponents()
     
   initRouters:->
     App.mainRegion = 'app'

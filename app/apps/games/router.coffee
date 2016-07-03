@@ -4,7 +4,10 @@ class GamesRouter extends Backbone.Router
     @routes =
       'games': 'showGames',
       'games/:id': 'showGame'
-    this._bindRoutes();
+    @_bindRoutes()
+    App = require('../../app')
+    @.on('route', (route)-> 
+      App.trigger('router:change', route))
 
   showGames: ()->
     app = @startApp()

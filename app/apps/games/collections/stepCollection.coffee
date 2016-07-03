@@ -1,4 +1,4 @@
-Step = require('../models/game')
+Step = require('../models/step')
 
 class StepCollection extends Backbone.Collection
   model: Step

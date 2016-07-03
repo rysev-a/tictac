@@ -1,16 +1,14 @@
 class UsersRouter extends Backbone.Router
   constructor: (options)->
-    super(options);
+    super(options)
     @routes =
-      'users': 'showUsers'
       'users/registration': 'showRegistration'
       'users/login': 'showLogin'
       'users/profile': 'showProfile'
-    this._bindRoutes();
-
-  showUsers: ()->
-    app = @startApp()
-    app.showUsers()
+    @_bindRoutes()
+    App = require('../../app')
+    @.on('route', (route)-> 
+      App.trigger('router:change', route))
 
   showRegistration: ()->
     app = @startApp()

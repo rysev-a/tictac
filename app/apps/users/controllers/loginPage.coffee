@@ -26,8 +26,8 @@ class LoginPage
         message = new Message
           content: 'login complete'
         message.showMessageView()
-        App.router.navigate('', true)
         App.trigger('profile:login', new User(response))
+        App.router.navigate('users/profile', true)
         App.trigger('loading:stop')
       (response)=>
         message = new Message

@@ -1,5 +1,4 @@
 App = require('../../../app')
-UsersPage = require('./controllers/usersPage')
 RegistrationPage = require('./controllers/registrationPage')
 LoginPage = require('./controllers/loginPage')
 ProfilePage = require('./controllers/profilePage')
@@ -7,10 +6,6 @@ ProfilePage = require('./controllers/profilePage')
 class UsersApp
   constructor: (options)->
     @region = options.region
-
-  showUsers: ()->
-    usersPage = @startController(UsersPage)
-    usersPage.showUsersView()
 
   showRegistration: ()->
     registrationPage = @startController(RegistrationPage)

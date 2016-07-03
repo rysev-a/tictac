@@ -16,7 +16,6 @@ Profile =
           resolve()
       )
   login:(model)->
-    console.log 'login'
     Profile.model = model
   logout:->
     request = $.ajax

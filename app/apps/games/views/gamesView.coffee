@@ -19,9 +19,8 @@ GameItem = React.createClass
         if status is 'created'
           a
             className: 'button button-primary start-game'
-            onClick: ()-> App.trigger('game:startGame', game.get('id'))
+            onClick: ()-> App.trigger('game:showGame', game.get('id'))
             'start game'
-
 
 GamesView = React.createClass
   createGame:->

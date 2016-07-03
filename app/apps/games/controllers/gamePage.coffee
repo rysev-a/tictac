@@ -8,16 +8,44 @@ StepCollection = require('../collections/stepCollection')
 class GamePage
   constructor: (options)->
     {@id, @region} = options
-    @stepCollection = new StepCollection
+
+  showGameView: ()->
+    @initGame()
+      .then(
+        (response)=>
+          @stepCollection = new StepCollection(@game.get('steps'))
+          @stepCollection.each((step)=> 
+            step.set('side', @getStepSide(step.get('master_id'))))
+          @game.set('steps', @stepCollection)
+          element = React.createElement(GameView, game: @game)
+          ReactDOM.render(element, document.getElementById(@region))
+          App.trigger('loading:stop')
+          @initListeners()
+        ()=>
+          App.trigger('loading:stop'))
+
+  initGame: ()->
+    new Promise (resolve, reject)=>
+      App.trigger('loading:start')
+      @game = new Game({id: @id})
+      @game.fetch()
+        .then(
+          ()=>
+            resolve()
+          ()=>
+            resolve())
+
+  initListeners:->
+    App.on('game:ready', @ready.bind(this))
+
     @stepCollection.on('add', 
-      ()=> App.trigger('game:showStep', @stepCollection)
-    )
+      ()=> App.trigger('game:showStep', @stepCollection))
+
     App.on('game:createStep', (id)=>
       tempStep = @createStep(id)
       if tempStep
         @stepCollection.add(tempStep)
-        @saveStep(tempStep)
-    )
+        @saveStep(tempStep))
 
     App.socket.on 'game:saveStep', (stepData)=>
       {x, y} = stepData
@@ -27,6 +55,11 @@ class GamePage
       stepData.side = @getStepSide(stepData.master_id)
       @stepCollection.add(new Step(stepData))
 
+  ready: ->
+    if @game.get('creator_id') == App.profile.model.get('id')
+      App.trigger('game:creatorReady')
+    else
+      App.trigger('game:enemyReady')
 
   createStep: (id)->
     {x, y} = @getPosition(id)
@@ -56,26 +89,6 @@ class GamePage
     y = Math.floor(id / 5)
     return {x, y}
 
-  initGame: ()->
-    App.trigger('loading:start')
-    @game = new Game({id: @id})
-    @game.fetch()
-      .then(()=>
-        @game.set('status', 1)
-        @game.set('enemy_id', App.profile.model.get('id'))
-        @game.save())
-    
-  showGameView: ()->
-    @initGame()
-      .then(
-        (response)=>
-          App.trigger('loading:stop')
-          @game.set('enemy', App.profile.model.toJSON())
-          element = React.createElement(GameView, game: @game)
-          ReactDOM.render(element, document.getElementById(@region))
-        ()=>
-          App.trigger('loading:stop')
-      )
   destroy:->
     App.socket.removeAllListeners('game:saveStep')
     @stepCollection.reset()
