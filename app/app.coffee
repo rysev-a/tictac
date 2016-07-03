@@ -5,9 +5,11 @@ App =
   start: ()->
     _.extend(App, Backbone.Events)
     App.socket = io.connect('http://' + document.domain + ':' + location.port)
-    App.initCore()
-    App.initComponents()
-    App.initRouters()
+    
+    #init core, then init components and routers
+    App.initCore().then ()=>
+      App.initComponents()
+      App.initRouters()
     
   initRouters:->
     App.mainRegion = 'app'
@@ -18,16 +20,19 @@ App =
     Backbone.history.start()
 
   initCore:->
+    #init loading
     App.loading = require './core/loading'
     App.loading.init()
     App.on('loading:start', App.loading.start)
     App.on('loading:stop', App.loading.stop)
     
+    #init profile
     App.profile = require './core/profile'
-    App.profile.init()
     App.on('profile:login', App.profile.login)
     App.on('profile:logout', App.profile.logout)
 
+    #init core return new promise
+    App.profile.init()
 
   initComponents: ()->
     nav = new (require './components/navigation/index')

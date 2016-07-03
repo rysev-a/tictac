@@ -1,6 +1,7 @@
 App = require '../../../../app'
 
-{table, tbody, thead, td, th, tr, h1, a, p, div, span} = React.DOM
+{table, tbody, thead, td, th, tr} = React.DOM 
+{h1, h4, a, p, div, span} = React.DOM
 
 Step = require('../models/step')
 StepCollection = require('../collections/stepCollection')
@@ -12,7 +13,7 @@ StepItem = React.createClass
     top = step.get('y') * 40
     left = step.get('x') * 40
     span
-      className: 'step'
+      className: "step #{step.get('side')}"
       style:
         top: "#{top}px"
         left: "#{left}px"
@@ -49,9 +50,16 @@ BoardView = React.createClass
 GameView = React.createClass
   render:->
     {game} = @props
+    creator = game.get('creator').login
+    enemy = game.get('enemy').login or 'waiting'
     div
-      className: 'game'
-      React.createElement(BoardView)
-      React.createElement(StepView)
+      className: 'game-page'
+      h4
+        className: 'game-title'
+        "#{creator} vs #{enemy}"
+      div
+        className: 'game'
+        React.createElement(BoardView)
+        React.createElement(StepView)
       
 module.exports = GameView

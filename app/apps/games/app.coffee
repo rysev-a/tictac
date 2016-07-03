@@ -11,7 +11,7 @@ class GamesApp
     gamesPage = @startController(GamesPage)
     gamesPage.showGamesView()
 
-  startGame: (id)->
+  showGame: (id)->
     @id = id
     gamePage = @startController(GamePage, id)
     gamePage.showGameView()
@@ -33,7 +33,7 @@ class GamesApp
     if @currentController.destroy
       @currentController.destroy()
     App.off('game:createGame')
-    App.off('game:startGame')
+    App.off('game:showGame')
     App.off('game:createStep')
     App.off('game:showStep')
     

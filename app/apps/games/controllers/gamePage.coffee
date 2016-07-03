@@ -5,9 +5,7 @@ Game = require('../models/game')
 Step = require('../models/step')
 StepCollection = require('../collections/stepCollection')
 
-
 class GamePage
-
   constructor: (options)->
     {@id, @region} = options
     @stepCollection = new StepCollection
@@ -26,7 +24,7 @@ class GamePage
       if @stepCollection.findWhere({x: x, y: y})
         return false
 
-      stepData.side = @getStepSide(stepData)
+      stepData.side = @getStepSide(stepData.master_id)
       @stepCollection.add(new Step(stepData))
 
 
@@ -63,8 +61,6 @@ class GamePage
     @game = new Game({id: @id})
     @game.fetch()
       .then(()=>
-        # @game.unset('enemy')
-        # @game.unset('creator')
         @game.set('status', 1)
         @game.set('enemy_id', App.profile.model.get('id'))
         @game.save())
@@ -74,6 +70,7 @@ class GamePage
       .then(
         (response)=>
           App.trigger('loading:stop')
+          @game.set('enemy', App.profile.model.toJSON())
           element = React.createElement(GameView, game: @game)
           ReactDOM.render(element, document.getElementById(@region))
         ()=>

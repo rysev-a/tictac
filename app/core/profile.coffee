@@ -3,16 +3,20 @@ App = require '../app'
 Message = require '../components/message/index'
 Profile =
   init:->
-    request = $.ajax
-      url: 'api/users/current'
-    request.then(
-      (response)=>
-        model = new User(response)
-        App.trigger('profile:login', model)
-      (response)=>
-        console.log response
-    )
+    new Promise (resolve, reject)->
+      request = $.ajax
+        url: 'api/users/current'
+      request.then(
+        (response)=>
+          model = new User(response)
+          App.trigger('profile:login', model)
+          resolve()
+        (response)=>
+          console.log 'user unauthorized'
+          resolve()
+      )
   login:(model)->
+    console.log 'login'
     Profile.model = model
   logout:->
     request = $.ajax
@@ -24,7 +28,6 @@ Profile =
         message = new Message
           content: response.message
           type: 'success'
-        #message.showMessageView()
         Profile.model.set('online', false)
         App.router.navigate('', true)
       (response)=>

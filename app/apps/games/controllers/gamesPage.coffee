@@ -6,7 +6,7 @@ GameCollection = require '../collections/gameCollection'
 class GamesPage
   constructor: (options)->
     App.on('game:createGame', @createGame.bind(this))
-    App.on('game:startGame', @startGame.bind(this))
+    App.on('game:showGame', @showGame.bind(this))
 
     @region = options.region
     @initGames()
@@ -36,7 +36,7 @@ class GamesPage
         console.log response
     )
 
-  startGame: (id)->
-    App.router.navigate("games/start/#{id}", true)
+  showGame: (id)->
+    App.router.navigate("games/#{id}", true)
 
 module.exports = GamesPage

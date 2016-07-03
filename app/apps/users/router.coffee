@@ -2,9 +2,10 @@ class UsersRouter extends Backbone.Router
   constructor: (options)->
     super(options);
     @routes =
-      'users': 'showUsers',
-      'users/registration': 'showRegistration',
+      'users': 'showUsers'
+      'users/registration': 'showRegistration'
       'users/login': 'showLogin'
+      'users/profile': 'showProfile'
     this._bindRoutes();
 
   showUsers: ()->
@@ -18,6 +19,10 @@ class UsersRouter extends Backbone.Router
   showLogin: ()->
     app = @startApp()
     app.showLogin()
+
+  showProfile: ()->
+    app = @startApp()
+    app.showProfile()
 
   startApp: ()->
     App = require('../../app')

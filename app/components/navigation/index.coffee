@@ -42,6 +42,7 @@ class Navigation
     _.extend(this, Backbone.Events)
 
     App.on('profile:login', ()=>
+      console.log 'set link inactive'
       @links.findWhere({title: 'registration'}).set('visible', false)
       @links.findWhere({title: 'login'}).set('visible', false)
       @links.findWhere({title: 'logout'}).set('visible', true)

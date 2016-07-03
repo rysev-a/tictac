@@ -2,6 +2,7 @@ App = require('../../../app')
 UsersPage = require('./controllers/usersPage')
 RegistrationPage = require('./controllers/registrationPage')
 LoginPage = require('./controllers/loginPage')
+ProfilePage = require('./controllers/profilePage')
 
 class UsersApp
   constructor: (options)->
@@ -18,6 +19,10 @@ class UsersApp
   showLogin: ()->
     loginPage = @startController(LoginPage)
     loginPage.showLoginView()
+
+  showProfile: ()->
+    profilePage = @startController(ProfilePage)
+    profilePage.showProfileView()
 
   startController: (Controller)->
     if @currentController && @currentController instanceof Controller
