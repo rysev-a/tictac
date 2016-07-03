@@ -1,0 +1,46 @@
+@import '../../mdl-colors'
+
+controlSize = 40px
+controlColor = md-indigo-600
+
+controlItem()
+  position absolute
+  width 0
+  border (controlSize/2) solid transparent
+  height 0
+  cursor pointer
+  opacity 0.5
+  transition opacity ease-in-out 0.5s
+  &:hover
+    opacity 0.8
+
+.control
+ 
+  .go-left
+    controlItem()
+    top 50%
+    margin-top -(controlSize/2)
+    left - controlSize
+    border-right (controlSize/2) solid controlColor
+ 
+  .go-right
+    controlItem()
+    top 50%
+    margin-top -(controlSize/2)
+    right - controlSize
+    border-left (controlSize/2) solid controlColor
+
+ 
+  .go-top
+    controlItem()
+    left 50%
+    margin-left -(controlSize/2)
+    top - controlSize
+    border-bottom (controlSize/2) solid controlColor
+ 
+  .go-bottom
+    controlItem()
+    left 50%
+    margin-left -(controlSize/2)
+    bottom - controlSize
+    border-top (controlSize/2) solid controlColor

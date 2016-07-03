@@ -19,7 +19,7 @@ def initapp():
     clear_db()
     init_db()
     create_users()
-    create_games()
+    #create_games()
     runserver()
 
 @manager.command

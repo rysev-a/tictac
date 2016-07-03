@@ -8,20 +8,6 @@ from .models import Game, Step
 from ..bcrypt import flask_bcrypt
 from ..database import init_db, db_session
 
-class GameListStatus(fields.Raw):
-    def format(self, value):
-        status_map = {
-            0: 'created',
-            1: 'creator_ready',
-            2: 'enemy_ready',
-            3: 'in_progress',
-            4: 'creator_win',
-            5: 'enemy_win',
-            6: 'reject'
-        }
-        return status_map.get(value)
-
-
 user_fields = {
     'id': fields.Integer,
     'login': fields.String
@@ -33,7 +19,7 @@ game_fields = {
     'enemy' : fields.Nested(user_fields),
     'creator_id': fields.Integer,
     'enemy_id': fields.Integer,
-    'status': GameListStatus
+    'status': fields.Integer
 }
 
 class GameList(Resource):
@@ -48,8 +34,9 @@ class GameList(Resource):
         game = Game(**data)
         db_session.add(game)
         db_session.commit()
-
-        return marshal(list([game]), game_fields)[0]
+        response = marshal(list([game]), game_fields)[0]
+        socketio.emit('game:createGame', response)
+        return response
 
 
     def get(self):
@@ -60,13 +47,23 @@ class GameList(Resource):
 
     def put(self):
         game_id = request.get_json()['id']
+        status = request.get_json()['status']
         game = Game.query.filter_by(id=game_id)
-        del request.json['creator']
-        del request.json['enemy']
-        del request.json['steps']
-        print(request.json)
-        game.update(request.json)
+        data = request.json
+        del data['creator']
+        del data['enemy']
+        del data['steps']
+        del data['queue']
+        del data['side']
+
+        game.update(data)
         db_session.commit()
+
+        game = Game.query.get(game_id)
+        response = marshal(list([game]), game_fields)[0], 200
+        if status == 1:
+            socketio.emit('game:initEnemy', response)
+
         return {'message': 'ok'}, 200
 
 class GameItem(Resource):
@@ -88,7 +85,7 @@ class GameItem(Resource):
             'enemy' : fields.Nested(user_fields),
             'creator_id': fields.Integer,
             'enemy_id': fields.Integer,
-            'status': GameListStatus,
+            'status': fields.Integer,
             'steps': fields.List(fields.Nested(step_fields))
         }
 

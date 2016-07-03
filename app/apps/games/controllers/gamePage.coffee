@@ -49,6 +49,10 @@ class GamePage
     if @game.get('creator_id') == App.profile.model.get('id')
       @game.set('side', 'creator')
 
+    if @game.get('creator_id') != App.profile.model.get('id')
+      if @game.get('status') == 0
+        @initEnemy()
+
   initGameQueue: ()->
     @game.set('queue', 'enemy')
     if not @stepCollection.last()
@@ -65,6 +69,7 @@ class GamePage
       tempStep = @createStep({x, y})
       if tempStep
         @stepCollection.add(tempStep)
+        @checkVictory(tempStep)
         @saveStep(tempStep))
 
     App.on('game:setQueue', (queue)=>
@@ -79,6 +84,25 @@ class GamePage
       App.trigger('game:setQueue', @invertSide(stepData.side))
       new Message(type: 'success', content: 'your queue')
       @stepCollection.add(new Step(stepData))
+
+    App.socket.on 'game:initEnemy', (gameData)=>
+      @game.set('enemy', gameData.enemy)
+      App.trigger 'game:updateGame', @game
+
+    App.on('game:victory', @gameVictory.bind(this))
+
+  initEnemy:->
+    App.trigger('loading:start')
+    enemy_id = App.profile.model.get('id')
+    @game.set('enemy_id', enemy_id)
+    @game.set('status', 1)
+    @game.save().then(
+      (response)=>
+        App.trigger('loading:stop')
+
+      (response)=>
+        App.trigger('loading:stop'))
+
 
   getStepSide: (master_id)->
     if master_id == @game.get('creator_id')
@@ -95,11 +119,8 @@ class GamePage
     game_id = @game.get('id')
     side = @game.get('side')
 
-    if side != @game.get('queue')
-      new Message
-        type: 'error'
-        content: "now quere #{@game.get('queue')}"
-      return
+    if not @checkStepQuere(side)
+      return false
 
     if side == 'creator'
       App.trigger('game:setQueue', 'enemy')
@@ -107,6 +128,15 @@ class GamePage
       App.trigger('game:setQueue', 'creator')
 
     new Step({x, y, master_id, side, game_id})
+
+  checkStepQuere: (side)->
+    if side != @game.get('queue')
+      queueUserName = @game.get(@game.get('queue')).login
+      new Message
+        type: 'error'
+        content: "now quere #{queueUserName}"
+      return false
+    return true
 
   saveStep: (step)->
     step.save().then(
@@ -116,13 +146,47 @@ class GamePage
   invertSide: (side)->
     {enemy: 'creator', creator: 'enemy'}[side]
 
-  getPosition: (id)->
-    x = id % 5
-    y = Math.floor(id / 5)
-    return {x, y}
+  checkVictory: (step)->
+    {x, y, side} = step.toJSON()
+
+    diagonalLeft = []
+    diagonalRight = []
+    vertical = []
+    horizontal = []
+    [-5..5].map (item)=>
+      diagonalLeft.push(@stepCollection.findWhere({x: x + item, y: y + item, side}))
+      diagonalRight.push(@stepCollection.findWhere({x: x - item, y: y + item, side}))
+      vertical.push(@stepCollection.findWhere({x, y:y + item, side}))
+      horizontal.push(@stepCollection.findWhere({x: x + item, y, side}))
+
+    [diagonalLeft, diagonalRight, horizontal, vertical].map @checkDirection
+
+  checkDirection: (direction)->
+    score = 0
+    direction.map (step)->
+      if step
+        ++score
+        if score is 5
+          App.trigger('game:victory')
+      else
+        score = 0
+
+  gameVictory:->
+    if @game.get('side') == 'creator'
+      @game.set('status', 2)
+    else
+      @game.set('status', 3)
+    @game.save().then(
+        (response)=>
+          new Message(type: 'success', content: 'You win!!!')
+          App.router.navigate('games', true)
+        (response)=>
+          console.log response
+      )
 
   destroy:->
     App.socket.removeAllListeners('game:saveStep')
+    App.socket.removeAllListeners('game:initEnemy')
     @stepCollection.reset()
       
 

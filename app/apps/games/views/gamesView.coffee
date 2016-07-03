@@ -2,7 +2,42 @@ App = require '../../../../app'
 
 {table, tbody, thead, td, th, tr, h1, a, p, div} = React.DOM
 
+ActionsView = React.createClass
+  getInitialState:->
+    {game} = @props
+    showPlayButton = false
+    if game.get('status') is 0
+      showPlayButton = true
+    if game.get('status') is 1
+      if game.get('enemy_id') == App.profile.model.get('id')
+        showPlayButton = true
+      if game.get('creator_id') == App.profile.model.get('id')
+        showPlayButton = true
+
+    {showPlayButton: showPlayButton}
+  render:->
+    {game} = @props
+    if @state.showPlayButton
+      a
+        className: 'button button-primary start-game'
+        onClick: ()-> App.trigger('game:showGame', game.get('id'))
+        'play'
+    else
+      div
+        className: null
+        '---'
+
 GameItem = React.createClass
+  getStatus: (status_id)->
+    {game} = @props
+    status_map =
+      0: 'new'
+      1: 'progress'
+      2: "#{game.get('creator').login} win"
+      3: "#{game.get('enemy').login} win"
+      4: 'reject'
+    status_map[status_id]
+
   render:->
     {game} = @props
     creator = game.get('creator').login
@@ -10,23 +45,25 @@ GameItem = React.createClass
     status = game.get('status')
     tr
       className: null
+      td(className: null, game.get('id'))
       td(className: null, creator)
       td(className: null, 'X')
       td(className: null, enemy)
-      td(className: null, status)
+      td(className: null, @getStatus(status))
       td
         className: null
-        if status is 'created'
-          a
-            className: 'button button-primary start-game'
-            onClick: ()-> App.trigger('game:showGame', game.get('id'))
-            'play'
+        React.createElement(ActionsView, game: game)
 
 GamesView = React.createClass
+  getInitialState:->
+    App.on 'game:updateGameList', (gamesData)=>
+      @setState(gamesData: gamesData)
+    {gamesData} = @props
+    {gamesData: gamesData}
   createGame:->
     App.trigger('game:createGame')
   render:->
-    {gamesData} = @props
+    gamesData = @state.gamesData
     div
       className: 'games'
       div
@@ -37,6 +74,7 @@ GamesView = React.createClass
             className: null
             tr
               className: null
+              th(className: null, '#')
               th(className: null, 'Creator')
               th(className: null, 'vs')
               th(className: null, 'Enemy')

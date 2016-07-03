@@ -7,9 +7,12 @@ class GamesPage
   constructor: (options)->
     App.on('game:createGame', @createGame.bind(this))
     App.on('game:showGame', @showGame.bind(this))
+    App.socket.on 'game:createGame', ()=>
+      @initGames().then ()=>
+        App.trigger('game:updateGameList', @gameCollection)
 
     @region = options.region
-    @initGames()
+
 
   initGames: ()->
     @gameCollection = new GameCollection
@@ -31,12 +34,15 @@ class GamesPage
      creator_id: App.profile.model.get('id')
     game.save().then(
       (response)=>
-        console.log response
+
       (response)=>
-        console.log response
+
     )
 
   showGame: (id)->
     App.router.navigate("games/#{id}", true)
+
+  destroy:->
+    App.socket.removeAllListeners('game:createGame')
 
 module.exports = GamesPage
