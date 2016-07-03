@@ -36,6 +36,7 @@ class GamesApp
     App.off('game:showGame')
     App.off('game:createStep')
     App.off('game:showStep')
+    App.off('game:setQueue')
     
 module.exports = GamesApp
 

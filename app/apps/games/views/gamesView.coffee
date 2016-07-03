@@ -20,7 +20,7 @@ GameItem = React.createClass
           a
             className: 'button button-primary start-game'
             onClick: ()-> App.trigger('game:showGame', game.get('id'))
-            'start game'
+            'play'
 
 GamesView = React.createClass
   createGame:->

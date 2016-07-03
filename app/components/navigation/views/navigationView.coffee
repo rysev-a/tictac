@@ -23,7 +23,7 @@ LinkView = React.createClass
         link
 
 logged = ['home', 'games','profile']
-unlogged = ['home', 'games', 'login', 'registration']
+unlogged = ['home', 'login', 'registration']
 NavigationView = React.createClass
 
   getInitialState: ->

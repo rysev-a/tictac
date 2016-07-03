@@ -27,7 +27,6 @@ StepView = React.createClass
       @setView(collection))
     {steps: game.get('steps')}
   render:->
-    console.log @state.steps
     div
       className: 'steps'
       @state.steps.map (step)->
@@ -35,45 +34,37 @@ StepView = React.createClass
 
 BoardItem = React.createClass
   render:->
-    {id} = @props
+    {x, y} = @props
     span
       className: 'board-item'
-      onClick: ()-> App.trigger('game:createStep', id)
+      onClick: ()-> App.trigger('game:createStep', {x, y})
 
 BoardView = React.createClass
+  getInitialState:->
+    board = []
+    [0..9].map (y)=>
+      [0..9].map (x)=>
+        key = "#{x}#{y}"
+        board.push {x,y,key}
+    {board: board}
   render:->
     div
       className: 'board'
-      [0..24].map (item)=>
-        React.createElement(BoardItem, key: item, id: item)
+      @state.board.map (boardItem)=>
+        React.createElement(BoardItem, boardItem)
 
-ReadyView = React.createClass
+QueueView = React.createClass
+  setQueue:(queue)->
+    @setState(queue: queue)
   getInitialState:->
-    App.on('game:creatorReady', 
-      ()=> @setState(creatorReady: true))
-    App.on('game:enemyReady',
-      ()=> @setState(enemyReady: true))
-    {creatorReady: false, enemyReady: false}
+    App.on('game:setQueue', @setQueue)
+    {game} = @props
+    {queue: game.get('queue')}
   render:->
     div
-      className: 'ready'
-      div
-        className: 'ready-info'
-        span(className: 'ready-field', 'creator: ')
-        span
-          className: 'ready-value'
-          if @state.creatorReady then 'ready!' else 'wait'
-      div
-        className: 'ready-info'
-        span(className: 'ready-field', 'enemy: ')
-        span
-          className: 'ready-value'
-          if @state.enemyReady then 'ready!' else 'wait'
-      div {className: 'ready-buttons'},
-        a
-          className: 'button button-primary'
-          onClick: ()-> App.trigger('game:ready')
-          'are you ready?'
+      className: 'queue'
+      "now queue: #{@state.queue}"
+
 
 GameView = React.createClass
   render:->
@@ -85,12 +76,11 @@ GameView = React.createClass
       h4
         className: 'game-title'
         "#{creator} vs #{enemy}"
+      React.createElement(QueueView, game: game)
       div
         className: 'game row'
-        div {className: 'six columns'},
+        div {className: 'twelwe columns'},
           React.createElement(BoardView)
           React.createElement(StepView, game: game)
-        div {className: 'six columns'},
-          React.createElement(ReadyView)
       
 module.exports = GameView
