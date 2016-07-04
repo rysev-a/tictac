@@ -37,10 +37,10 @@ class GamesApp
     App.off('game:updateGameList')
 
     App.off('game:createStep')
-    App.off('game:showStep')
-    App.off('game:setQueue')
-    App.off('game:setOffset')
-    App.off('game:updateGame')
+    #App.off('game:showStep')
+    #App.off('game:setQueue')
+    #App.off('game:setOffset')
+    #App.off('game:updateGame')
     
 module.exports = GamesApp
 

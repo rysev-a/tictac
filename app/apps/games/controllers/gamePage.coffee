@@ -104,7 +104,6 @@ class GamePage
       (response)=>
         App.trigger('loading:stop'))
 
-
   getStepSide: (master_id)->
     if master_id == @game.get('creator_id')
       return 'creator'
@@ -118,6 +117,7 @@ class GamePage
 
     master_id = App.profile.model.get('id')
     game_id = @game.get('id')
+
     side = @game.get('side')
 
     if not @checkStepQuere(side)
@@ -192,6 +192,34 @@ class GamePage
       
 #module.exports = GamePage
 
+class GameStep
+  constructor: ({@x, @y}, @game)->
+    @stepCollection = @game.get('steps')
+
+  send:->
+    @step = new Step
+      x: @x
+      y: @y
+      side: @game.get('side')
+      master_id: App.profile.model.get('id')
+      game_id: @game.get('id')
+
+    if @stepCollection.findWhere({@x, @y})
+      new Message(type: 'error', content: 'busy!')
+      return false
+
+    # if not @game.get('side') is @game.get('queue') 
+    #   new Message(type: 'error', content: 'wait opponent')
+    #   return false
+
+    @save()
+  
+  save:->
+    @step.save()
+      .done null
+      .error null
+
+
 class NewGame
   constructor: ({@id, @region})->
   
@@ -212,6 +240,8 @@ class NewGame
             @initGameSteps()
             @initGameQueue()
             @initGameSide()
+            @initGameEvents()
+            @initSockets()
             resolve()
           ()=>
             resolve())
@@ -235,5 +265,50 @@ class NewGame
     @game.set('side', 'enemy')
     if @game.get('creator_id') == App.profile.model.get('id')
       @game.set('side', 'creator')
+
+  initGameEvents: ()->
+    @game.on('change': ()=> App.trigger('game:update'))
+    App.on('game:sendStep', @sendStep.bind(this))
+
+  initSockets: ->
+    App.socket.on 'game:saveStep', @addStep.bind(this)
+
+  sendStep: ({x, y})->
+    step = new GameStep({x, y}, @game)
+    step.send()
+
+  setStepSide: (step)->
+    if step.get('master_id') is @game.get('creator_id') 
+      step.set('side', 'creator')
+
+  addStep: (data)->
+    step = new Step(data)
+    @setStepSide(step)
+    @game.get('steps').add(step)
+    @checkVictory(step)
+    @game.trigger('change')
+
+  checkVictory: (step)->
+    steps = @game.get('steps')
+    {x, y, side} = step.toJSON()
+
+    [left, right, horizontal, vertical] = [[],[],[],[]]
+    [-5..5].map (offset)=>
+      left.push(steps.findWhere({x: x + offset, y: y + offset, side}))
+      right.push(steps.findWhere({x: x - offset, y: y + offset, side}))
+      horizontal.push(steps.findWhere({x, y:y + offset, side}))
+      vertical.push(steps.findWhere({x: x + offset, y, side}))
+
+    [left, right, horizontal, vertical].map @checkScore
+
+  checkScore: (direction)->
+    score = 0
+    direction.map (step)->
+      if step
+        ++score
+        if score is 5
+          App.trigger('game:victory')
+      else
+        score = 0
 
 module.exports = NewGame

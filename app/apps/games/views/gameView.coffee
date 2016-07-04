@@ -34,9 +34,8 @@ BoardItem = React.createClass
     {x, y} = @props
     span
       className: 'board-item'
-      onClick: ()-> 
-        console.log {x, y}
-        App.trigger('game:createStep', {x, y})
+      onClick: ()->
+        App.trigger('game:sendStep', {x, y})
       style:
         top: "#{y * 40}px"
         left: "#{x * 40}px"
@@ -65,6 +64,8 @@ ControlView = React.createClass
 
 GameView = React.createClass
   getInitialState:->
+    App.on 'game:update', (game)=>
+      @setState(game:game)
     {game} = @props
     {game: game}
   render:->

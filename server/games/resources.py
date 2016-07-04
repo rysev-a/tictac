@@ -97,7 +97,8 @@ class StepList(Resource):
             'id': fields.Integer,
             'master_id': fields.Integer,
             'x': fields.Integer,
-            'y': fields.Integer
+            'y': fields.Integer,
+            'game_id': fields.Integer
         }
 
         del request.json['side']
