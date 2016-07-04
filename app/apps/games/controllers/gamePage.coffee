@@ -5,6 +5,7 @@ Game = require('../models/game')
 Step = require('../models/step')
 StepCollection = require('../collections/stepCollection')
 
+
 class GamePage
   constructor: (options)->
     {@id, @region} = options
@@ -189,6 +190,50 @@ class GamePage
     App.socket.removeAllListeners('game:initEnemy')
     @stepCollection.reset()
       
+#module.exports = GamePage
 
+class NewGame
+  constructor: ({@id, @region})->
+  
+  showGameView:->
+    @initGame().then(
+      ()=>
+        element = React.createElement(GameView, game: @game)
+        ReactDOM.render(element, document.getElementById(@region))
+      )
+    #App.router.navigate('games')
 
-module.exports = GamePage
+  initGame:->
+    new Promise (resolve, reject)=>
+      @game = new Game({id: @id})
+      @game.fetch()
+        .then(
+          ()=>
+            @initGameSteps()
+            @initGameQueue()
+            @initGameSide()
+            resolve()
+          ()=>
+            resolve())
+
+  initGameSteps:->
+    steps = new StepCollection(@game.get('steps'))
+    steps.each((step)=> 
+      step.set('side', 'enemy')
+      if step.get('master_id') == @game.get('creator_id')
+        step.set('side', 'creator'))
+
+    @game.set('steps', steps)
+  
+  initGameQueue: ()->
+    @game.set('queue', 'enemy')
+    if (not @game.get('steps').last() or
+        @game.get('steps').last().get('side') is 'enemy')
+      @game.set('queue', 'creator')
+
+  initGameSide: ()->
+    @game.set('side', 'enemy')
+    if @game.get('creator_id') == App.profile.model.get('id')
+      @game.set('side', 'creator')
+
+module.exports = NewGame

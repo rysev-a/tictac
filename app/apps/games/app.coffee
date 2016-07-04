@@ -33,7 +33,7 @@ class GamesApp
     if @currentController.destroy
       @currentController.destroy()
     App.off('game:createGame')
-    App.off('game:showGame')
+    #App.off('game:showGame')
     App.off('game:updateGameList')
 
     App.off('game:createStep')

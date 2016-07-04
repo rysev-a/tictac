@@ -67,6 +67,12 @@ GamesView = React.createClass
     div
       className: 'games'
       div
+        className: 'games-actions'
+        a
+          className: 'button button-primary'
+          onClick: @createGame
+          'create game'
+      div
         className: 'games-list'
         table
           className: "u-full-width"
@@ -84,12 +90,6 @@ GamesView = React.createClass
             className: null
             gamesData.map (game)->
               React.createElement(GameItem, game:game, key: game.cid)
-      div
-        className: 'games-actions'
-        a
-          className: 'button button-primary'
-          onClick: @createGame
-          'create game'
 
 
 module.exports = GamesView
