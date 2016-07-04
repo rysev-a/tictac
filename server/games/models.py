@@ -19,7 +19,7 @@ class Step(Base):
     game = relationship('Game', foreign_keys=[game_id])
 
     def __repr__(self):
-        return self.id
+        return 'step by %s' % (self.master.login)
 
 class Game(Base):
     __tablename__ = 'games'

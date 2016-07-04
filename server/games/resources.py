@@ -49,11 +49,6 @@ class GameList(Resource):
         status = request.get_json()['status']
         game = Game.query.filter_by(id=game_id)
         data = request.json
-        del data['creator']
-        del data['enemy']
-        del data['steps']
-        del data['queue']
-        del data['side']
 
         game.update(data)
         db_session.commit()
@@ -61,7 +56,7 @@ class GameList(Resource):
         game = Game.query.get(game_id)
         response = marshal(list([game]), game_fields)[0], 200
         if status == 1:
-            socketio.emit('game:initEnemy', response)
+            socketio.emit('game:update', response)
 
         return {'message': 'ok'}, 200
 

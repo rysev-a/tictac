@@ -70,8 +70,11 @@ GameView = React.createClass
     {game: game}
   render:->
     game = @state.game
+    creator = @state.game.get('creator').login
+    enemy = @state.game.get('enemy').login ? 'waiting'
     div
       className: 'game-page'
+      div(className: 'game-users', "#{creator} vs #{enemy}")
       div
         className: 'game row'
         div {className: 'twelwe columns'},
