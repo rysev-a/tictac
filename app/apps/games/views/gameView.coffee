@@ -80,6 +80,20 @@ ControlView = React.createClass
           key: item
           onClick: @navigate.papp(item)
 
+VictoryView = React.createClass
+  getInitialState:->
+    {game} = @props
+    console.log game.get('status')
+    if game.get('status') is 2
+      winner = "#{game.get('creator').login}"
+    if game.get('status') is 3
+      winner = "#{game.get('enemy').login}"
+    {game, winner}
+  render:->
+    h4
+      className: 'game-victory'
+      "#{@state.winner} win!"
+
 GameView = React.createClass
   getInitialState:->
     App.on 'game:navigate', (position)=> @setState(position: position)
@@ -91,6 +105,11 @@ GameView = React.createClass
     game = @state.game
     creator = @state.game.get('creator').login
     enemy = @state.game.get('enemy').login ? 'waiting'
+
+    console.log game.get('status')
+    if game.get('status') in [2, 3]
+      return React.createElement(VictoryView, game: game)
+
     div
       className: 'game-page'
       div(className: 'game-users', "#{creator} vs #{enemy}")

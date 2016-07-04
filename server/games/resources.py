@@ -35,7 +35,7 @@ class GameList(Resource):
         db_session.add(game)
         db_session.commit()
         response = marshal(list([game]), game_fields)[0]
-        socketio.emit('game:createGame', response)
+        socketio.emit('game:updateGameList', response)
         return response
 
 
@@ -55,9 +55,9 @@ class GameList(Resource):
 
         game = Game.query.get(game_id)
         response = marshal(list([game]), game_fields)[0], 200
-        if status == 1:
-            socketio.emit('game:update', response)
 
+        socketio.emit('game:update', response)
+        socketio.emit('game:updateGameList', response)
         return {'message': 'ok'}, 200
 
 class GameItem(Resource):

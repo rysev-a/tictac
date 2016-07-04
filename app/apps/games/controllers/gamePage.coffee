@@ -229,7 +229,6 @@ class NewGame
         element = React.createElement(GameView, game: @game)
         ReactDOM.render(element, document.getElementById(@region))
       )
-    #App.router.navigate('games')
 
   initGame:->
     new Promise (resolve, reject)=>
@@ -280,12 +279,6 @@ class NewGame
     @game.on('change': ()=> App.trigger('game:update', @game))
     App.on('game:sendStep', @sendStep.bind(this))
 
-  initSockets: ->
-    App.socket.on 'game:saveStep', @addStep.bind(this)
-    App.socket.on 'game:update', (data)=>
-      @game.set(data)
-      App.trigger('game:update', @game)
-
   sendStep: ({x, y})->
     step = new GameStep({x, y}, @game)
     step.send()
@@ -294,14 +287,25 @@ class NewGame
     if step.get('master_id') is @game.get('creator_id') 
       step.set('side', 'creator')
 
+  initSockets: ->
+    App.socket.on 'game:saveStep', @addStep.bind(this)
+    App.socket.on 'game:update', (data)=>
+      @game.set(data)
+      App.trigger('game:update', @game)
+
+  ### activated by socket for both users ###
   addStep: (data)->
     step = new Step(data)
     @setStepSide(step)
     @game.get('steps').add(step)
-    @checkVictory(step)
     @game.trigger('change')
+    @checkVictory(step)
 
   checkVictory: (step)->
+    #check victory only on step master page
+    if step.get('master_id') isnt App.profile.model.get('id')
+      return false
+
     steps = @game.get('steps')
     {x, y, side} = step.toJSON()
 
@@ -312,16 +316,30 @@ class NewGame
       horizontal.push(steps.findWhere({x, y:y + offset, side}))
       vertical.push(steps.findWhere({x: x + offset, y, side}))
 
-    [left, right, horizontal, vertical].map @checkScore
+    [left, right, horizontal, vertical].map @checkScore.bind(this)
 
   checkScore: (direction)->
     score = 0
-    direction.map (step)->
+    direction.map (step)=>
       if step
         ++score
         if score is 5
-          App.trigger('game:victory')
+          @showVictory()
       else
         score = 0
+  
+  showVictory:->
+    status = if @game.get('side') is 'creator' then 2 else 3
+    @game.set('status', status)
+    @game.save()
+
+  sendVictory:->
+    console.log 'send victory to server'
+
+  ####### ..... #######
+
+  destroy:->
+    App.socket.removeAllListeners('game:saveStep')
+    App.socket.removeAllListeners('game:update')
 
 module.exports = NewGame

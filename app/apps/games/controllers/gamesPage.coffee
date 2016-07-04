@@ -7,7 +7,7 @@ class GamesPage
   constructor: (options)->
     App.on('game:createGame', @createGame.bind(this))
     App.on('game:showGame', @showGame.bind(this))
-    App.socket.on 'game:createGame', ()=>
+    App.socket.on 'game:updateGameList', ()=>
       @initGames().then ()=>
         App.trigger('game:updateGameList', @gameCollection)
 
@@ -43,6 +43,6 @@ class GamesPage
     App.router.navigate("games/#{id}", true)
 
   destroy:->
-    App.socket.removeAllListeners('game:createGame')
+    App.socket.removeAllListeners('game:updateGameList')
 
 module.exports = GamesPage
