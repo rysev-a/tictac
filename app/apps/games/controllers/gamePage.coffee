@@ -196,6 +196,7 @@ class GameStep
   constructor: ({@x, @y}, @game)->
     @stepCollection = @game.get('steps')
 
+
   send:->
     @step = new Step
       x: @x
@@ -222,7 +223,9 @@ class GameStep
 
 class NewGame
   constructor: ({@id, @region})->
-  
+      room = "room_#{@id}"
+      App.socket.emit('join', {room: room})
+
   showGameView:->
     @initGame().then(
       ()=>

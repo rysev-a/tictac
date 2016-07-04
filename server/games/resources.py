@@ -36,6 +36,8 @@ class GameList(Resource):
         db_session.commit()
         response = marshal(list([game]), game_fields)[0]
         socketio.emit('game:updateGameList', response)
+
+        #socketio.emit('game:updateGameList', response, room='games')
         return response
 
 
@@ -56,7 +58,7 @@ class GameList(Resource):
         game = Game.query.get(game_id)
         response = marshal(list([game]), game_fields)[0], 200
 
-        socketio.emit('game:update', response)
+        socketio.emit('game:update', response, room='room_%d' % game_id)
         socketio.emit('game:updateGameList', response)
         return {'message': 'ok'}, 200
 
@@ -96,12 +98,15 @@ class StepList(Resource):
             'game_id': fields.Integer
         }
 
+        game_id = request.json['game_id']
+
         del request.json['side']
         step = Step(**request.json)
         db_session.add(step)
         db_session.commit()
 
         response = marshal(list([step]), step_fields)[0]
-        socketio.emit('game:saveStep', response)
+        #socketio.emit('game:updateGameList', response, room='games')
+        socketio.emit('game:saveStep', response, room='room_%d' % game_id)
 
         return response

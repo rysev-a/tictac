@@ -11,6 +11,7 @@ class GamesPage
       @initGames().then ()=>
         App.trigger('game:updateGameList', @gameCollection)
 
+
     @region = options.region
 
 
