@@ -38,7 +38,7 @@ StepView = React.createClass
 BoardItem = React.createClass
   render:->
     {x, y} = @props
-    [stepX, stepY] = [x + gamePosition.x, y + gamePosition.y]
+    [stepX, stepY] = [x + gamePosition.x, y - gamePosition.y]
     span
       className: 'board-item'
       onClick: ()->
