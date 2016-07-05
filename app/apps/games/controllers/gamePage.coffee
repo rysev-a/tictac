@@ -5,7 +5,6 @@ Game = require('../models/game')
 Step = require('../models/step')
 StepCollection = require('../collections/stepCollection')
 
-
 class GameStep
   constructor: ({@x, @y}, @game)->
     @stepCollection = @game.get('steps')
@@ -111,11 +110,18 @@ class NewGame
   ### activated by socket for both users ###
   addStep: (data)->
     step = new Step(data)
+    @showQueue(step)
     @setStepSide(step)
     @game.get('steps').add(step)
     @initGameQueue()
     @game.trigger('change')
     @checkVictory(step)
+
+  showQueue: (step)->
+    if App.profile.model.get('id') isnt step.get('master_id')
+      new Message
+        type: 'success'
+        content: 'you queue'
 
   checkVictory: (step)->
     #check victory only on step master page
@@ -154,5 +160,6 @@ class NewGame
   destroy:->
     App.socket.removeAllListeners('game:saveStep')
     App.socket.removeAllListeners('game:update')
+    @game.off()
 
 module.exports = NewGame

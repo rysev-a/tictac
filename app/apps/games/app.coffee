@@ -38,6 +38,7 @@ class GamesApp
 
     App.off('game:update')
     App.off('game:createStep')
+    App.off('game:sendStep')
     #App.off('game:showStep')
     #App.off('game:setQueue')
     #App.off('game:setOffset')

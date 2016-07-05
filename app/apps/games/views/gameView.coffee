@@ -49,16 +49,28 @@ BoardItem = React.createClass
 
 BoardView = React.createClass
   getInitialState:->
+    {game} = @props
     board = []
     [0..9].map (x)=>
       [0..9].map (y)=>
         key = "#{x}#{y}"
         board.push {x,y,key}
     App.on 'game:showNavigate', (position)=> @setState(position: position)      
-    {board: board, position: {}}
+    {board: board, position: {}, game: game}
+  getClassName:->
+    game = @state.game
+    statusMap =
+      0: 'new'
+      1: 'progress'
+      2: 'win'
+      3: 'win'
+      4: 'reject'
+    gameState = statusMap[game.get('status')]
+    return "board #{gameState}"
+
   render:->
     div
-      className: 'board'
+      className: @getClassName()
       @state.board.map (boardItem)=>
         React.createElement(BoardItem, boardItem)
 
@@ -115,7 +127,7 @@ GameView = React.createClass
         className: 'game row'
         div {className: 'twelwe columns'},
           React.createElement(ControlView)
-          React.createElement(BoardView)
+          React.createElement(BoardView, game:game)
           React.createElement(StepView, game: game)
       
 module.exports = GameView

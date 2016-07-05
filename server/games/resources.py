@@ -42,8 +42,7 @@ class GameList(Resource):
 
 
     def get(self):
-        games = Game.query.filter_by(status=0).order_by(Game.id.desc())[:5]
-        # games = Game.query.all()
+        games = Game.query.order_by(Game.id.desc())[:10]
         return marshal(list(games), game_fields), 200
 
     def put(self):
