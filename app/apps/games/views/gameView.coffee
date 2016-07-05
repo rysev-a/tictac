@@ -83,7 +83,6 @@ ControlView = React.createClass
 VictoryView = React.createClass
   getInitialState:->
     {game} = @props
-    console.log game.get('status')
     if game.get('status') is 2
       winner = "#{game.get('creator').login}"
     if game.get('status') is 3
@@ -106,7 +105,6 @@ GameView = React.createClass
     creator = @state.game.get('creator').login
     enemy = @state.game.get('enemy').login ? 'waiting'
 
-    console.log game.get('status')
     if game.get('status') in [2, 3]
       return React.createElement(VictoryView, game: game)
 

@@ -4,8 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 from . import settings
-
-engine = create_engine(settingsTpl.format(settings.DATABASE), 
+settingsTpl = '{engine}://{user}:{password}@{host}:{port}/{name}'
+engine = create_engine(settingsTpl.format(**settings.DATABASE), 
     pool_size=20, max_overflow=100)
 
 db_session = scoped_session(sessionmaker(autocommit=False,
