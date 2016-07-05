@@ -27,7 +27,7 @@ LoginView = React.createClass
       div
         className: 'row'
         div
-          className: 'twelve columns'
+          className: 'six columns'
           React.createElement InputView,
             type: 'email',
             model: user,
@@ -38,9 +38,14 @@ LoginView = React.createClass
             model: user,
             field: 'password'
             title: 'password'
-      a
-        className: 'button button-primary submit-button'
-        onClick: ()=> App.trigger('login:start', user)
-        'done!'
+          a
+            className: 'button button-primary submit-button'
+            onClick: ()=> App.trigger('login:start', user)
+            'done!'
+        div
+          className: 'six columns'
+          style:
+            textAlign: 'right'
+          'have a good day! ;)'
 
 module.exports = LoginView
