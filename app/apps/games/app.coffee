@@ -33,16 +33,13 @@ class GamesApp
     if @currentController.destroy
       @currentController.destroy()
     App.off('game:createGame')
-    #App.off('game:showGame')
     App.off('game:updateGameList')
 
     App.off('game:update')
     App.off('game:createStep')
     App.off('game:sendStep')
-    #App.off('game:showStep')
-    #App.off('game:setQueue')
-    #App.off('game:setOffset')
-    #App.off('game:updateGame')
+    App.off('game:navigate')
+
     
 module.exports = GamesApp
 
