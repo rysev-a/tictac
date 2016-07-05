@@ -1,4 +1,4 @@
-# [tictac](http://tictac-toe.ru/) #
+# [tictac](http://tictac-game.ru/) #
 
 Игра в крестики нолики
 
