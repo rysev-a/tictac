@@ -77,7 +77,8 @@ class UserList(Resource):
         login_user(user, remember=True)
 
         user_fields = {
-            'login' : fields.String,
+            'id': fields.Integer,
+            'login': fields.String,
             'email': fields.String,
             'about': fields.String
         }
