@@ -15,15 +15,15 @@ manager = Manager(app)
 
 
 @manager.command
-def initapp():
+def init_app():
     clear_db()
     init_db()
     create_users()
     #create_games()
-    runserver()
+    run_server()
 
 @manager.command
-def runserver():
+def run_server():
     from server import app
     from server.socket import socketio
     if __name__ == '__main__':

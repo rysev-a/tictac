@@ -3,4 +3,4 @@ __pycache__/
 /static
 /node_modules
 /bower_components
-
+/server/settings.py
